@@ -1,11 +1,708 @@
-HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Agency Landing Page</title>
+  <!-- ============================================================
+       Chute Stack — Landing page (getchutestack.com)
+       Business automation: lead intake, CRM integration, speed-to-lead.
+       Single-file build: Tailwind (CDN) + small inline CSS + vanilla JS.
+       ============================================================ -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Chute Stack — Speed-to-lead automation and CRM integration</title>
+  <meta name="description" content="Chute Stack captures every new lead, replies within a minute, and routes it into the CRM you already use, so your team spends less time on busy work and more time closing deals." />
+  <meta name="theme-color" content="#141A23" />
+  <link rel="canonical" href="https://getchutestack.com/" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://getchutestack.com/" />
+  <meta property="og:title" content="Chute Stack — Leads in the top. Booked calls out the bottom." />
+  <meta property="og:description" content="Done-for-you lead intake, instant follow-up and CRM integration for sales teams." />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicon: inline SVG so there are no extra files to manage -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141A23'/%3E%3Cpath d='M11 6v13a5 5 0 0 0 10 0V6' fill='none' stroke='%233D8BFF' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='12' r='2.6' fill='%23EEF0EA'/%3E%3C/svg%3E" />
+
+  <!-- Fonts: Bricolage Grotesque (display) + IBM Plex Sans (body) + IBM Plex Mono (timestamps only) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (Play CDN) with brand tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink:    '#141A23', // page background (slate)
+            panel:  '#1B2330', // raised surfaces
+            line:   '#2B3646', // borders / dividers
+            mist:   '#8D99AB', // secondary text
+            paper:  '#EEF0EA', // primary text (off-white)
+            volt:   '#3D8BFF', // electric blue accent
+            voltdk: '#2266DD', // accent hover/pressed
+          },
+          fontFamily: {
+            display: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            sans:    ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+            mono:    ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+          },
+          maxWidth: { prose: '62ch' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ---------- Base ---------- */
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    ::selection { background: #3D8BFF; color: #fff; }
+    :focus-visible { outline: 2px solid #3D8BFF; outline-offset: 3px; border-radius: 6px; }
+
+    /* Display headline: tight, optical-size heavy */
+    .headline { letter-spacing: -0.035em; line-height: 0.95; font-variation-settings: "opsz" 96; }
+
+    /* Faint blueprint grid behind the hero */
+    .blueprint {
+      background-image:
+        linear-gradient(to right, rgba(141,153,171,.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(141,153,171,.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 75%);
+    }
+
+    /* ---------- The chute (hero lead-pipeline visual) ---------- */
+    .chute-rail { background: #2B3646; }
+    .chute-fill {
+      background: #3D8BFF;
+      box-shadow: 0 0 14px rgba(61,139,255,.55);
+      transition: height 700ms cubic-bezier(.6,.05,.3,1);
+    }
+    .packet {
+      transition: transform 700ms cubic-bezier(.6,.05,.3,1), opacity 300ms ease;
+      box-shadow: 0 0 0 4px rgba(61,139,255,.18), 0 0 22px rgba(61,139,255,.8);
+    }
+    .stage { transition: border-color 300ms ease, background-color 300ms ease; }
+    .stage[data-state="running"] { border-color: #3D8BFF; background-color: rgba(61,139,255,.07); }
+    .stage .dot { transition: background-color 300ms ease, box-shadow 300ms ease; }
+    .stage[data-state="running"] .dot { background: #3D8BFF; box-shadow: 0 0 10px #3D8BFF; }
+    .stage[data-state="done"] .dot    { background: #EEF0EA; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .chute-fill, .packet, .stage, .stage .dot { transition: none !important; }
+    }
+
+    /* Safe-area padding for notched phones */
+    .safe-x { padding-left: max(1.25rem, env(safe-area-inset-left)); padding-right: max(1.25rem, env(safe-area-inset-right)); }
+  </style>
 </head>
-<body>
-    <h1>Infrastructure Systems & Architecture</h1>
-    <p>Site coming soon.</p>
+
+<body class="bg-ink text-paper font-sans antialiased">
+
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-volt focus:text-white focus:px-4 focus:py-2 focus:rounded-md">Skip to content</a>
+
+  <!-- ============================================================
+       HEADER / NAV
+       ============================================================ -->
+  <header id="top" class="sticky top-0 z-40 border-b border-transparent bg-ink/80 backdrop-blur-md transition-colors" data-header>
+    <nav class="safe-x mx-auto flex h-16 max-w-6xl items-center justify-between" aria-label="Main">
+      <a href="#top" class="flex items-center gap-2.5" aria-label="Chute Stack home">
+        <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M11 5v14a5 5 0 0 0 10 0V5" fill="none" stroke="#3D8BFF" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="16" cy="12" r="2.6" fill="#EEF0EA"/>
+        </svg>
+        <span class="font-display text-lg font-bold tracking-tight">Chute Stack</span>
+      </a>
+
+      <div class="hidden items-center gap-8 md:flex">
+        <a href="#services" class="text-sm text-mist hover:text-paper">Services</a>
+        <a href="#how" class="text-sm text-mist hover:text-paper">How it works</a>
+        <a href="#integrations" class="text-sm text-mist hover:text-paper">Integrations</a>
+        <a href="#contact" class="rounded-lg bg-volt px-4 py-2 text-sm font-semibold text-white hover:bg-voltdk">Book a fit call</a>
+      </div>
+
+      <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line md:hidden"
+              aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu" data-menu-toggle>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" data-icon-open />
+          <path d="M6 6l12 12M18 6L6 18" class="hidden" data-icon-close />
+        </svg>
+      </button>
+    </nav>
+
+    <div id="mobile-menu" class="safe-x hidden border-t border-line bg-ink pb-5 md:hidden">
+      <div class="flex flex-col gap-1 pt-3">
+        <a href="#services" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Services</a>
+        <a href="#how" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>How it works</a>
+        <a href="#integrations" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Integrations</a>
+        <a href="#contact" class="mt-2 rounded-lg bg-volt px-4 py-3 text-center font-semibold text-white" data-menu-link>Book a fit call</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================================================
+         HERO
+         Left: headline + CTA. Right: the "chute" — a new lead drops
+         through capture, instant reply, CRM entry and booking.
+         ============================================================ -->
+    <section class="relative overflow-hidden">
+      <div class="blueprint pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+      <div class="safe-x relative mx-auto grid max-w-6xl items-center gap-14 pb-20 pt-14 md:pt-24 lg:grid-cols-[1.15fr_1fr] lg:gap-10 lg:pb-28">
+        <div>
+          <h1 class="headline font-display text-[2.9rem] font-extrabold sm:text-6xl lg:text-[4.6rem]">
+            Leads in the top.<br />Booked calls out the bottom.
+          </h1>
+          <p class="mt-7 max-w-prose text-lg leading-relaxed text-mist">
+            Chute Stack captures every new lead, replies within a minute, and drops it into the CRM you already use,
+            assigned to the right rep. We build it, connect it and run it, so your team spends its day closing deals
+            instead of copying contacts between tabs.
+          </p>
+          <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a href="#contact" class="inline-flex items-center justify-center rounded-lg bg-volt px-6 py-3.5 font-semibold text-white shadow-[0_8px_30px_-8px_rgba(61,139,255,.7)] hover:bg-voltdk">
+              Book a free 15-min fit call
+            </a>
+            <a href="#how" class="inline-flex items-center justify-center rounded-lg border border-line px-6 py-3.5 font-medium text-paper hover:border-mist">
+              See how it works
+            </a>
+          </div>
+          <p class="mt-6 text-sm text-mist">A 15-minute Google Meet to see if we're a fit. No obligation.</p>
+        </div>
+
+        <!-- The chute -->
+        <div class="relative mx-auto w-full max-w-md lg:max-w-none" aria-label="Example lead moving from capture to a booked call" role="img">
+          <div class="rounded-[22px] border border-line bg-panel/90 p-5 shadow-2xl shadow-black/40 sm:p-6">
+            <!-- Lead header -->
+            <div class="flex items-start justify-between gap-4 border-b border-line pb-4">
+              <div>
+                <p class="text-sm font-semibold" data-lead-name>Jordan Ellis</p>
+                <p class="mt-0.5 text-xs text-mist" data-lead-meta>Website form · Kitchen remodel quote</p>
+              </div>
+              <span class="shrink-0 rounded-full border border-line px-2.5 py-1 text-xs text-mist" data-run-status>New lead</span>
+            </div>
+
+            <!-- Stages + rail -->
+            <div class="relative mt-5 pl-9" data-chute>
+              <div class="chute-rail absolute bottom-3 left-[11px] top-3 w-[3px] rounded-full" aria-hidden="true"></div>
+              <div class="chute-fill absolute left-[11px] top-3 w-[3px] rounded-full" style="height:0" data-fill aria-hidden="true"></div>
+              <div class="packet absolute left-[6px] top-0 h-[13px] w-[13px] rounded-full bg-volt opacity-0" data-packet aria-hidden="true"></div>
+
+              <ol class="space-y-3">
+                <li class="stage flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3" data-stage data-state="idle">
+                  <span class="flex items-center gap-3"><span class="dot h-2 w-2 shrink-0 rounded-full bg-line"></span><span class="font-medium">Lead captured</span></span>
+                  <span class="font-mono text-xs text-mist" data-time>—</span>
+                </li>
+                <li class="stage flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3" data-stage data-state="idle">
+                  <span class="flex items-center gap-3"><span class="dot h-2 w-2 shrink-0 rounded-full bg-line"></span><span class="font-medium">Text reply sent</span></span>
+                  <span class="font-mono text-xs text-mist" data-time>—</span>
+                </li>
+                <li class="stage flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3" data-stage data-state="idle">
+                  <span class="flex items-center gap-3"><span class="dot h-2 w-2 shrink-0 rounded-full bg-line"></span><span class="font-medium" data-crm-label>Added to CRM, assigned to a rep</span></span>
+                  <span class="font-mono text-xs text-mist" data-time>—</span>
+                </li>
+                <li class="stage flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3" data-stage data-state="idle">
+                  <span class="flex items-center gap-3"><span class="dot h-2 w-2 shrink-0 rounded-full bg-line"></span><span class="font-medium">Call booked</span></span>
+                  <span class="font-mono text-xs text-mist" data-time>—</span>
+                </li>
+              </ol>
+            </div>
+
+            <!-- Outcome -->
+            <div class="mt-5 flex items-center justify-between rounded-xl bg-ink px-4 py-3">
+              <span class="text-xs text-mist">Time to first reply</span>
+              <span class="font-mono text-xs font-semibold text-mist" data-live>—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SERVICES
+         Sticky intro on the left; services as a divided list on the right.
+         ============================================================ -->
+    <section id="services" class="border-t border-line">
+      <div class="safe-x mx-auto grid max-w-6xl gap-12 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:py-32">
+        <div class="lg:sticky lg:top-28 lg:self-start">
+          <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">The first reply usually wins the deal.</h2>
+          <p class="mt-5 max-w-prose leading-relaxed text-mist">
+            Most leads go cold while they wait in an inbox or a spreadsheet. We set up the systems that answer them
+            right away and keep them moving, without adding work to your team's day.
+          </p>
+        </div>
+
+        <ul class="divide-y divide-line border-y border-line">
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">Speed-to-lead response</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">Every new lead gets a personal text or email within a minute, day or night, written in your voice and asking the questions your reps would ask.</p>
+            </div>
+          </li>
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">One intake for every lead source</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">Website forms, Facebook and Google ads, missed calls, live chat and referral partners all land in the same pipeline, with duplicates merged automatically.</p>
+            </div>
+          </li>
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/><path d="M10 7.5h4a3 3 0 0 1 3 3V13"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">Integration with the CRM you already use</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">We connect to HubSpot, Salesforce, GoHighLevel, Pipedrive and others. Your team keeps working where it works now; the data just shows up complete and on time.</p>
+            </div>
+          </li>
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">Routing to the right rep</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">Leads are assigned by territory, service line or round-robin, and the rep gets an alert with everything they need to call back.</p>
+            </div>
+          </li>
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">Follow-up that doesn't give up</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">Leads who don't answer get a planned sequence of texts and emails until they reply, book a call or ask to stop.</p>
+            </div>
+          </li>
+          <li class="grid gap-3 py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-5">
+            <svg class="h-7 w-7 text-volt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l4-4 3 3 5-6"/></svg>
+            <div>
+              <h3 class="font-display text-xl font-bold">Reporting you can act on</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-mist">A weekly report shows response times, which sources turn into booked calls, and where leads are still stalling.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         HOW IT WORKS — a true sequence, so numbered steps fit here.
+         ============================================================ -->
+    <section id="how" class="border-t border-line bg-panel/40">
+      <div class="safe-x mx-auto max-w-6xl py-24 lg:py-32">
+        <h2 class="max-w-2xl font-display text-4xl font-bold tracking-tight sm:text-5xl">Done for you, start to finish.</h2>
+        <ol class="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+          <li class="relative border-l-2 border-volt pl-6">
+            <span class="font-display text-5xl font-extrabold text-line" aria-hidden="true">1</span>
+            <h3 class="mt-3 text-lg font-semibold">We audit your pipeline</h3>
+            <p class="mt-2 leading-relaxed text-mist">We trace where your leads come from, how long they wait for a reply, and where they fall through the cracks today.</p>
+          </li>
+          <li class="relative border-l-2 border-line pl-6">
+            <span class="font-display text-5xl font-extrabold text-line" aria-hidden="true">2</span>
+            <h3 class="mt-3 text-lg font-semibold">We build and connect it</h3>
+            <p class="mt-2 leading-relaxed text-mist">We set up intake, instant replies, routing and follow-up, and connect everything to your CRM and calendars. Your team reviews it before it goes live.</p>
+          </li>
+          <li class="relative border-l-2 border-line pl-6">
+            <span class="font-display text-5xl font-extrabold text-line" aria-hidden="true">3</span>
+            <h3 class="mt-3 text-lg font-semibold">We run it and keep improving</h3>
+            <p class="mt-2 leading-relaxed text-mist">We monitor every workflow, fix anything that breaks, and adjust messaging based on what's booking calls. You focus on closing.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         INTEGRATIONS — plain list of what we connect to.
+         ============================================================ -->
+    <section id="integrations" class="border-t border-line">
+      <div class="safe-x mx-auto grid max-w-6xl gap-12 py-24 lg:grid-cols-2 lg:gap-20 lg:py-32">
+        <div>
+          <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">Works with the tools you already pay for.</h2>
+          <p class="mt-5 max-w-prose leading-relaxed text-mist">
+            No new software for your team to learn. We plug into your current stack and make the pieces talk to each other.
+            Don't see yours? We've probably connected it before, so ask.
+          </p>
+        </div>
+        <dl class="divide-y divide-line rounded-2xl border border-line">
+          <div class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:justify-between sm:gap-6">
+            <dt class="text-mist">CRMs</dt>
+            <dd class="font-medium sm:text-right">HubSpot, Salesforce, GoHighLevel, Pipedrive, Zoho</dd>
+          </div>
+          <div class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:justify-between sm:gap-6">
+            <dt class="text-mist">Lead sources</dt>
+            <dd class="font-medium sm:text-right">Website forms, Facebook and Google ads, Angi, Zillow, live chat</dd>
+          </div>
+          <div class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:justify-between sm:gap-6">
+            <dt class="text-mist">Messaging</dt>
+            <dd class="font-medium sm:text-right">Text (SMS), email, missed-call text back</dd>
+          </div>
+          <div class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:justify-between sm:gap-6">
+            <dt class="text-mist">Calendars</dt>
+            <dd class="font-medium sm:text-right">Google Calendar, Outlook, Calendly</dd>
+          </div>
+          <div class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:justify-between sm:gap-6">
+            <dt class="text-mist">Team alerts</dt>
+            <dd class="font-medium sm:text-right">Slack, Microsoft Teams, text, email</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CONTACT / FIT CALL
+         Answers post to the Make webhook (FORM_ENDPOINT), then the
+         visitor is sent to the booking page (BOOKING_URL).
+         ============================================================ -->
+    <section id="contact" class="border-t border-line bg-panel/40">
+      <div class="safe-x mx-auto grid max-w-6xl gap-12 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-32">
+        <div>
+          <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">Book a free 15-minute fit call.</h2>
+          <p class="mt-5 max-w-prose leading-relaxed text-mist">
+            Answer a few quick questions about your business, then pick a time on the next screen.
+            It takes about two minutes, and the call is a quick Google Meet to see if we can help.
+          </p>
+          <p class="mt-8 text-mist">
+            Prefer email?
+            <a href="mailto:info@getchutestack.com" class="font-medium text-paper underline decoration-volt decoration-2 underline-offset-4 hover:text-volt">info@getchutestack.com</a>
+          </p>
+        </div>
+
+        <form class="rounded-2xl border border-line bg-ink p-6 sm:p-8" novalidate data-contact-form>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="block text-sm font-medium">Name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required
+                     class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none" />
+              <p id="err-name" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="name">Enter your name.</p>
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium">Work email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required
+                     class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none" />
+              <p id="err-email" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="email">Enter an email address like name@company.com.</p>
+            </div>
+            <div>
+              <label for="company" class="block text-sm font-medium">Company</label>
+              <input id="company" name="company" type="text" autocomplete="organization" required
+                     class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none" />
+              <p id="err-company" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="company">Enter your company name.</p>
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium">Phone <span class="text-mist">(optional)</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel"
+                     class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none" />
+            </div>
+            <div>
+              <label for="industry" class="block text-sm font-medium">Industry</label>
+              <select id="industry" name="industry" required
+                      class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none">
+                <option value="" disabled selected>Choose one</option>
+                <option>Insurance agency</option>
+                <option>Home services (roofing, HVAC, plumbing, solar)</option>
+                <option>Real estate or mortgage</option>
+                <option>Marketing agency</option>
+                <option>Med spa or wellness clinic</option>
+                <option>Something else</option>
+              </select>
+              <p id="err-industry" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="industry">Choose your industry.</p>
+            </div>
+            <div>
+              <label for="team" class="block text-sm font-medium">Team size</label>
+              <select id="team" name="team" required
+                      class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none">
+                <option value="" disabled selected>Choose one</option>
+                <option>1–2</option>
+                <option>3–10</option>
+                <option>11–30</option>
+                <option>More than 30</option>
+              </select>
+              <p id="err-team" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="team">Choose your team size.</p>
+            </div>
+            <div>
+              <label for="revenue" class="block text-sm font-medium">Annual revenue</label>
+              <select id="revenue" name="revenue" required
+                      class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none">
+                <option value="" disabled selected>Choose one</option>
+                <option>Under $500K</option>
+                <option>$500K–$1M</option>
+                <option>$1M–$5M</option>
+                <option>More than $5M</option>
+              </select>
+              <p id="err-revenue" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="revenue">Choose a revenue range.</p>
+            </div>
+            <div>
+              <label for="volume" class="block text-sm font-medium">New leads per month</label>
+              <select id="volume" name="volume" required
+                      class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none">
+                <option value="" disabled selected>Choose one</option>
+                <option>Fewer than 50</option>
+                <option>50–200</option>
+                <option>200–1,000</option>
+                <option>More than 1,000</option>
+              </select>
+              <p id="err-volume" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="volume">Choose your monthly lead volume.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="crm" class="block text-sm font-medium">CRM you use now</label>
+              <select id="crm" name="crm" required
+                      class="mt-2 w-full rounded-lg border border-line bg-panel px-3.5 py-3 text-paper focus:border-volt focus:outline-none">
+                <option value="" disabled selected>Choose one</option>
+                <option>HubSpot</option>
+                <option>Salesforce</option>
+                <option>GoHighLevel</option>
+                <option>Pipedrive</option>
+                <option>Zoho</option>
+                <option>Something else</option>
+                <option>No CRM yet</option>
+              </select>
+              <p id="err-crm" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="crm">Choose your CRM, or "No CRM yet".</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="message" class="block text-sm font-medium">Where do your leads come from, and what happens next?</label>
+              <textarea id="message" name="message" rows="4" required
+                        placeholder="For example: Facebook ads and our website form go to a shared inbox, and someone calls back when they can."
+                        class="mt-2 w-full resize-y rounded-lg border border-line bg-panel px-3.5 py-3 text-paper placeholder:text-mist/60 focus:border-volt focus:outline-none"></textarea>
+              <p id="err-message" class="mt-1.5 hidden text-sm text-[#FF8A8A]" data-error-for="message">Add a sentence or two so we can prepare for the call.</p>
+            </div>
+            <!-- Honeypot field: hidden from people, catches basic spam bots -->
+            <div class="hidden" aria-hidden="true">
+              <label for="website">Leave this empty</label>
+              <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+          </div>
+
+          <button type="submit" class="mt-7 w-full rounded-lg bg-volt px-6 py-3.5 font-semibold text-white hover:bg-voltdk disabled:cursor-wait disabled:opacity-70 sm:w-auto" data-submit>
+            Continue to pick a time
+          </button>
+          <p class="mt-4 text-sm" role="status" aria-live="polite" data-form-status></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="border-t border-line">
+    <div class="safe-x mx-auto flex max-w-6xl flex-col gap-4 py-10 text-sm text-mist sm:flex-row sm:items-center sm:justify-between">
+      <p>© <span data-year></span> Chute Stack. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#services" class="hover:text-paper">Services</a>
+        <a href="#contact" class="hover:text-paper">Contact</a>
+        <a href="mailto:info@getchutestack.com" class="hover:text-paper">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ---------- Config ---------- */
+    // Make webhook that receives each submission (Make → Notion CRM → Discord).
+    const FORM_ENDPOINT = 'https://hook.us2.make.com/2m5jsfoermihhpk965wkz0txwacjvg4r';
+    // Google Calendar appointment schedule: "Chute Stack Fit Call (15 min)".
+    const BOOKING_URL   = 'https://calendar.app.google/zcAfXkVjqHeS3TC98';
+    const CONTACT_EMAIL = 'info@getchutestack.com';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---------- Footer year ---------- */
+    document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
+
+    /* ---------- Header border on scroll ---------- */
+    const header = document.querySelector('[data-header]');
+    const onScroll = () => header.classList.toggle('border-line', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    /* ---------- Mobile menu ---------- */
+    const toggle = document.querySelector('[data-menu-toggle]');
+    const menu = document.getElementById('mobile-menu');
+    const setMenu = (open) => {
+      menu.classList.toggle('hidden', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      toggle.querySelector('[data-icon-open]').classList.toggle('hidden', open);
+      toggle.querySelector('[data-icon-close]').classList.toggle('hidden', !open);
+    };
+    toggle.addEventListener('click', () => setMenu(menu.classList.contains('hidden')));
+    menu.querySelectorAll('[data-menu-link]').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+    window.matchMedia('(min-width: 768px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
+
+    /* ---------- Hero chute animation ----------
+       A new lead drops through each stage: captured, instant reply,
+       CRM + rep assignment, booked call. Loops through sample leads.
+       All names below are fictional examples — edit freely. */
+    const chute    = document.querySelector('[data-chute]');
+    const packet   = document.querySelector('[data-packet]');
+    const fill     = document.querySelector('[data-fill]');
+    const stages   = Array.from(document.querySelectorAll('[data-stage]'));
+    const statusEl = document.querySelector('[data-run-status]');
+    const liveEl   = document.querySelector('[data-live]');
+    const nameEl   = document.querySelector('[data-lead-name]');
+    const metaEl   = document.querySelector('[data-lead-meta]');
+    const crmEl    = document.querySelector('[data-crm-label]');
+
+    const leads = [
+      { name: 'Jordan Ellis', meta: 'Website form · Kitchen remodel quote', crm: 'Added to HubSpot, assigned to Dana', times: ['0s', '22s', '24s', '9m'] },
+      { name: 'Priya Nair',   meta: 'Facebook ad · Roof inspection',         crm: 'Added to GoHighLevel, assigned to Sam', times: ['0s', '17s', '19s', '14m'] },
+      { name: 'Marcus Webb',  meta: 'Missed call · HVAC service',            crm: 'Added to Salesforce, assigned to Lee',  times: ['0s', '31s', '33s', '6m'] },
+      { name: 'Elena Ruiz',   meta: 'Google ad · Free consultation',         crm: 'Added to Pipedrive, assigned to Alex',  times: ['0s', '12s', '15s', '21m'] },
+    ];
+    let run = 0;
+    const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+    const centerOf = (stage) => stage.offsetTop + stage.offsetHeight / 2;
+    function movePacketTo(y) {
+      packet.style.transform = `translateY(${y - 6}px)`;
+      fill.style.height = Math.max(0, y - 12) + 'px';
+    }
+    function setStatus(text, active) {
+      statusEl.textContent = text;
+      statusEl.className = 'shrink-0 rounded-full border px-2.5 py-1 text-xs ' +
+        (active ? 'border-volt text-volt' : 'border-line text-mist');
+    }
+    function setReplyTime(text, active) {
+      liveEl.textContent = text;
+      liveEl.className = 'font-mono text-xs font-semibold ' + (active ? 'text-volt' : 'text-mist');
+    }
+    function loadLead(lead) {
+      nameEl.textContent = lead.name;
+      metaEl.textContent = lead.meta;
+      crmEl.textContent = lead.crm;
+    }
+    function reset(lead) {
+      stages.forEach(s => { s.dataset.state = 'idle'; s.querySelector('[data-time]').textContent = '—'; });
+      packet.style.opacity = '0';
+      movePacketTo(0);
+      setReplyTime('—', false);
+      setStatus('New lead', false);
+      loadLead(lead);
+    }
+
+    // Reduced motion: show one finished example, no animation.
+    function showFinished() {
+      const lead = leads[0];
+      loadLead(lead);
+      stages.forEach((s, i) => {
+        s.dataset.state = 'done';
+        s.querySelector('[data-time]').textContent = lead.times[i];
+      });
+      fill.style.height = (chute.offsetHeight - 24) + 'px';
+      setStatus('Booked', true);
+      setReplyTime(lead.times[1], true);
+    }
+
+    async function play() {
+      const lead = leads[run % leads.length];
+      reset(lead);
+      await wait(900);
+      packet.style.opacity = '1';
+      setStatus('Working', true);
+      for (let i = 0; i < stages.length; i++) {
+        const s = stages[i];
+        movePacketTo(centerOf(s));
+        await wait(500);
+        s.dataset.state = 'running';
+        s.querySelector('[data-time]').textContent = '…';
+        await wait(1000);
+        s.dataset.state = 'done';
+        s.querySelector('[data-time]').textContent = lead.times[i];
+        if (i === 1) setReplyTime(lead.times[1], true); // first reply just went out
+      }
+      packet.style.opacity = '0';
+      fill.style.height = (chute.offsetHeight - 24) + 'px';
+      setStatus('Booked', true);
+      run++;
+      await wait(3800);
+      play();
+    }
+
+    if (reduceMotion) {
+      showFinished();
+    } else {
+      // Start only once the hero is visible.
+      let started = false;
+      new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !started) { started = true; play(); }
+      }, { threshold: 0.3 }).observe(chute);
+    }
+
+    /* ---------- Contact form ---------- */
+    const form    = document.querySelector('[data-contact-form]');
+    const submit  = form.querySelector('[data-submit]');
+    const statusP = form.querySelector('[data-form-status]');
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    function showError(field, show) {
+      const input = form.elements[field];
+      const msg = form.querySelector(`[data-error-for="${field}"]`);
+      msg.classList.toggle('hidden', !show);
+      input.classList.toggle('border-[#FF8A8A]', show);
+      input.setAttribute('aria-invalid', String(show));
+      if (show) input.setAttribute('aria-describedby', msg.id);
+      else input.removeAttribute('aria-describedby');
+    }
+    function validate() {
+      const v = Object.fromEntries(new FormData(form));
+      const errors = {
+        name: !v.name.trim(),
+        email: !emailRe.test(v.email.trim()),
+        company: !v.company.trim(),
+        industry: !v.industry,
+        team: !v.team,
+        revenue: !v.revenue,
+        volume: !v.volume,
+        crm: !v.crm,
+        message: !v.message.trim(),
+      };
+      Object.entries(errors).forEach(([k, bad]) => showError(k, bad));
+      const firstBad = Object.keys(errors).find(k => errors[k]);
+      if (firstBad) form.elements[firstBad].focus();
+      return !firstBad;
+    }
+    ['name', 'email', 'company', 'message'].forEach(f => form.elements[f].addEventListener('input', () => showError(f, false)));
+    ['industry', 'team', 'revenue', 'volume', 'crm'].forEach(f => form.elements[f].addEventListener('change', () => showError(f, false)));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusP.textContent = '';
+      if (form.elements.website.value) return;   // honeypot tripped
+      if (!validate()) return;
+
+      const data = Object.fromEntries(new FormData(form));
+      delete data.website;
+      data.source = 'website';
+      data.page = window.location.href;
+
+      submit.disabled = true;
+      submit.textContent = 'Saving your answers…';
+      try {
+        // Sent as a simple form post with keepalive, so it reaches Make even as
+        // the browser moves on to the booking page.
+        await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          keepalive: true,
+          body: new URLSearchParams(data),
+        });
+        statusP.className = 'mt-4 text-sm text-volt';
+        statusP.textContent = 'Got it. Taking you to pick a time…';
+        setTimeout(() => { window.location.href = BOOKING_URL; }, 700);
+      } catch (err) {
+        // Answers didn't send, but still let them book.
+        submit.disabled = false;
+        submit.textContent = 'Continue to pick a time';
+        statusP.className = 'mt-4 text-sm text-[#FF8A8A]';
+        statusP.innerHTML = 'Your answers didn\'t send. You can still <a class="underline" href="' + BOOKING_URL +
+          '">book your call here</a>, or email ' + CONTACT_EMAIL + '.';
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
