@@ -159,7 +159,7 @@
         <a href="#services" class="text-sm text-mist hover:text-paper">Services</a>
         <a href="#how" class="text-sm text-mist hover:text-paper">How it works</a>
         <a href="#integrations" class="text-sm text-mist hover:text-paper">Integrations</a>
-        <a href="#contact" class="rounded-lg bg-volt px-4 py-2 text-sm font-semibold text-white hover:bg-voltdk">Book an audit</a>
+        <a href="#contact" class="rounded-lg bg-volt px-4 py-2 text-sm font-semibold text-white hover:bg-voltdk">Book a fit call</a>
       </div>
 
       <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line md:hidden"
@@ -177,7 +177,7 @@
         <a href="#services" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Services</a>
         <a href="#how" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>How it works</a>
         <a href="#integrations" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Integrations</a>
-        <a href="#contact" class="mt-2 rounded-lg bg-volt px-4 py-3 text-center font-semibold text-white" data-menu-link>Book an audit</a>
+        <a href="#contact" class="mt-2 rounded-lg bg-volt px-4 py-3 text-center font-semibold text-white" data-menu-link>Book a fit call</a>
       </div>
     </div>
   </header>
@@ -204,13 +204,13 @@
           </p>
           <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <a href="#contact" class="inline-flex items-center justify-center rounded-lg bg-volt px-6 py-3.5 font-semibold text-white shadow-[0_8px_30px_-8px_rgba(61,125,255,.7)] hover:bg-voltdk">
-              Book a free pipeline audit
+              Book a free fit call
             </a>
             <a href="#how" class="inline-flex items-center justify-center rounded-lg border border-line px-6 py-3.5 font-medium text-paper hover:border-mist">
               See how it works
             </a>
           </div>
-          <p class="mt-6 text-sm text-mist">A 30-minute call where we map where leads slip through today. No obligation.</p>
+          <p class="mt-6 text-sm text-mist">A 15-minute Google Meet to see if we're a fit. No obligation.</p>
         </div>
 
         <!-- The chute -->
@@ -681,10 +681,10 @@
     <section id="contact" class="border-t border-line bg-panel/40">
       <div class="safe-x mx-auto grid max-w-6xl gap-12 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-32">
         <div>
-          <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">Book a free pipeline audit.</h2>
+          <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">Book a free fit call.</h2>
           <p class="mt-5 max-w-prose leading-relaxed text-mist">
-            Tell us how leads reach you today. We'll reply within one business day to set up a 30-minute call and
-            show you exactly where time and deals are being lost.
+            Tell us how leads reach you today. We'll reply within one business day with a link to book a 15-minute
+            Google Meet and see where time and deals are being lost.
           </p>
           <p class="mt-8 text-mist">
             Prefer email?
@@ -754,7 +754,7 @@
           </div>
 
           <button type="submit" class="mt-7 w-full rounded-lg bg-volt px-6 py-3.5 font-semibold text-white hover:bg-voltdk disabled:cursor-wait disabled:opacity-70 sm:w-auto" data-submit>
-            Request my audit
+            Request my fit call
           </button>
           <p class="mt-4 text-sm" role="status" aria-live="polite" data-form-status></p>
         </form>
@@ -963,7 +963,7 @@
         const body =
           `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || '—'}\nPhone: ${data.phone || '—'}\n` +
           `CRM: ${data.crm}\nLeads per month: ${data.volume}\n\n${data.message}`;
-        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Pipeline audit request')}&body=${encodeURIComponent(body)}`;
+        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Fit call request')}&body=${encodeURIComponent(body)}`;
         statusP.className = 'mt-4 text-sm text-mist';
         statusP.textContent = 'Your email app should open with the request filled in. Press send there to finish.';
         return;
@@ -980,13 +980,13 @@
         if (!res.ok) throw new Error(res.status);
         form.reset();
         statusP.className = 'mt-4 text-sm text-volt';
-        statusP.textContent = 'Audit requested. We\'ll email you within one business day to pick a time.';
+        statusP.textContent = 'Request received. We\'ll email you within one business day with a link to book.';
       } catch (err) {
         statusP.className = 'mt-4 text-sm text-[#FF8A8A]';
         statusP.textContent = `The request didn't go through. Check your connection and try again, or email ${CONTACT_EMAIL}.`;
       } finally {
         submit.disabled = false;
-        submit.textContent = 'Request my audit';
+        submit.textContent = 'Request my fit call';
       }
     });
   })();
