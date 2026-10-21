@@ -154,11 +154,12 @@
         <span class="font-logo text-[15px] font-bold uppercase tracking-[0.18em]">Chute<span class="ml-1.5 text-volt">Stack</span></span>
       </a>
 
-      <div class="hidden items-center gap-8 md:flex">
+      <div class="hidden items-center gap-6 md:flex lg:gap-8">
         <a href="#missed-call-test" class="text-sm text-mist hover:text-paper">Free test</a>
+        <a href="#guide" class="text-sm text-mist hover:text-paper">Free guide</a>
         <a href="#services" class="text-sm text-mist hover:text-paper">Services</a>
         <a href="#how" class="text-sm text-mist hover:text-paper">How it works</a>
-        <a href="#integrations" class="text-sm text-mist hover:text-paper">Integrations</a>
+        <a href="#integrations" class="hidden text-sm text-mist hover:text-paper lg:inline">Integrations</a>
         <a href="#contact" class="rounded-lg bg-volt px-4 py-2 text-sm font-semibold text-white hover:bg-voltdk">Book a fit call</a>
       </div>
 
@@ -174,6 +175,7 @@
     <div id="mobile-menu" class="safe-x hidden border-t border-line bg-ink pb-5 md:hidden">
       <div class="flex flex-col gap-1 pt-3">
         <a href="#missed-call-test" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Free test</a>
+        <a href="#guide" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Free guide</a>
         <a href="#services" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Services</a>
         <a href="#how" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>How it works</a>
         <a href="#integrations" class="rounded-md px-2 py-3 text-paper hover:bg-panel" data-menu-link>Integrations</a>
@@ -478,6 +480,8 @@
           <p class="mt-5 text-xs text-mist">Estimate only, based on the numbers you enter. Assumes about 4.3 weeks a month.</p>
         </div>
 
+        <!-- Anchor: link straight here with getchutestack.com/#guide -->
+        <div id="guide" class="scroll-mt-24">
         <form id="lead" class="grid gap-3 rounded-2xl border border-volt/40 bg-volt/[0.06] p-6" novalidate>
           <p class="font-display text-xl font-bold text-paper">Get the free guide: <span class="text-volt">3 Mistakes That Send Customers to Your Competitors</span></p>
           <p class="text-sm text-mist">A short PDF showing the same moments with and without a system behind your phone and inbox, plus a 5-minute self-check. I'll email it with your numbers from above.</p>
@@ -495,6 +499,7 @@
           <button id="l-send" type="submit" class="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-volt px-6 py-3.5 font-semibold text-white transition hover:bg-voltdk focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper">Email me the guide <span aria-hidden="true">→</span></button>
           <p id="l-msg" class="min-h-[1.25rem] text-sm text-mist" role="status"></p>
         </form>
+        </div>
       </div>
     </div>
   </div>
