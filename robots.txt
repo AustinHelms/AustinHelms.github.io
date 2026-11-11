@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /thanks/
+
+Sitemap: https://getchutestack.com/sitemap.xml
